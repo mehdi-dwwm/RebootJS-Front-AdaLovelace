@@ -1,5 +1,5 @@
 export interface IProfile {
-  email: string;
-  firstname: string;
-  lastname: string;
-}
+    email: string;
+    firstname: string;
+    lastname: string;
+  }

@@ -1,46 +1,43 @@
 import React from 'react';
-import { IFormField, defaultFormField } from '../../utils/types';
+import { IFormField, defaultFormField } from '../utils/types';
 import { TextField, Button, Container, Box, Grid } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import { login } from '../../api/methods';
-import history from '../../history';
-import { validateRequiredField } from '../../utils/validateRequiredField';
+import { login } from '../api/methods';
+import history from '../history';
+import { validateRequiredField } from '../utils/validateRequiredField';
 
 interface LoginFormState {
-  email: IFormField,
-  password: IFormField,
-  status: 'ready' | 'success' | 'error',
+    email: IFormField,
+    password: IFormField,
+    status: 'ready' | 'success' | 'error'
 }
 
 class LoginForm extends React.Component<{}, LoginFormState> {
-  constructor(props: {}){
-    super(props)
-    this.state = {
-      email: defaultFormField(),
-      password: defaultFormField(),
-      status: 'ready'
+    constructor(props: {}){
+        super(props)
+        this.state = {
+            email: defaultFormField(),
+            password: defaultFormField(),
+            status: 'ready'
+        }
+        this.submit = this.submit.bind(this) // ou définir submit en arrow function : submit = () => {}
     }
-    this.submit = this.submit.bind(this) // ou définir submit en arrow function : submit = () => {}
-  }
 
-  submit(){
-    login(this.state.email.value, this.state.password.value)
-      .then((_profile) => {
-        history.push('/')
-        // this.setState({status: 'success'})
-      })
-      .catch(_error => { this.setState({status: 'error'})});
-  }
+    submit(){
+        login(this.state.email.value, this.state.password.value)
+          .then((_profile) => history.push('/'))
+          .catch(_error => { this.setState({status: 'error'})});
+    }
 
-  render(){
-    const { email, password, status } = this.state;
-    return (
-    <Container maxWidth='xs'>
-      {status !== 'ready' ?
-        <Alert severity={status}>
-          {status === 'success' ? 'Utilisateur connecté' : 'Utilisateur inexistant'}
-        </Alert> : null }
-      <form onSubmit={(event) => { event.preventDefault(); this.submit() }}>
+    render(){
+        const { email, password, status } = this.state;
+        return (
+        <Container maxWidth='xs'>
+          { status !== 'ready' ? 
+            <Alert severity={status}>
+              { status === 'success' ? 'Utilisateur connecté' : 'Utilisateur inexistant'}
+            </Alert> : null }
+        <form onSubmit={(event) => { event.preventDefault(); this.submit() }}>
         <Box style={{ margin: '2rem 0'}}>
           <TextField
             label="Email"
@@ -68,10 +65,10 @@ class LoginForm extends React.Component<{}, LoginFormState> {
 
             {...( password.isValid ? {} : { error: true, helperText: "Ce champ est obligatoire" })}
           />
-        </Box>
-        <Box style={{margin: '1rem 0'}}>
-          <Grid container justify='flex-end'>
-            <Grid item xs={4}>
+          </Box>
+          <Box style={{margin: '1rem 0'}}>
+            <Grid container justify='flex-end'>
+              <Grid item xs={4}>
               <Button
                 color="primary"
                 variant="contained"
@@ -80,12 +77,12 @@ class LoginForm extends React.Component<{}, LoginFormState> {
               >
                 Submit
               </Button>
+              </Grid>
             </Grid>
-          </Grid>
-        </Box>
-      </form>
-    </Container>
-  )}
+          </Box>
+        </form>
+        </Container>
+        )}
 }
 
 export default LoginForm;
