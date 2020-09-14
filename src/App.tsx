@@ -1,24 +1,29 @@
 import React from 'react';
 import './App.css';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
-import { blue, yellow } from '@material-ui/core/colors';
 import { Router } from 'react-router-dom';
 import history from './history';
-import AppContent from './layout/AppContent';
+import AppLayout from './layout/AppLayout';
 
 
 const theme = createMuiTheme({
     palette: {
-      primary: blue,
-      secondary: yellow,
+      primary: {
+        main: "#3cc1ff",
+        contrastText: "white"
     },
+    secondary: {
+      main: "#FF5760",
+      contrastText: "white"
+    }
+  },   
 })
 
 function App() {
   return (
     <Router history={history}>
       <ThemeProvider theme={theme}>
-        <AppContent />
+        <AppLayout />
       </ThemeProvider>
     </Router>
    

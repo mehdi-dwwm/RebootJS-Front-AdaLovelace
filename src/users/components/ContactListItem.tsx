@@ -9,7 +9,7 @@ interface ContactListItemProps {
 
 class ContactListItem extends React.Component<ContactListItemProps>{
   render(){
-    return <ListItemText>Name: {this.props.firstname} {this.props.lastname}</ListItemText>
+    return <ListItemText>FirstName: {this.props.firstname} LastName: {this.props.lastname}</ListItemText>
   }
 }
 

@@ -5,10 +5,11 @@ import history from '../../history';
 import { Alert } from '@material-ui/lab';
 import { defaultFormField, defaultPasswordField, IProfileFormFields } from '../../utils/types';
 import IdentitySection from './IdentitySection';
-import { validateRequiredField } from '../../utils/validateRequiredField';
 import CredentialsSection from './CredentialsSection';
 import ProfileFormCheck from './ProfileFormCheck';
 import { validateEmailField } from '../utils/validateEmailField';
+import { validateNameField } from '../utils/validateNameField';
+import { validatePasswordField } from '../utils/validatePasswordField';
 
 export interface IRegistrationFormState {
   status: 'ready' | 'success' | 'error';
@@ -55,15 +56,15 @@ class RegistrationForm extends React.Component<{}, IRegistrationFormState> {
           break;
         case 'firstname':
           const { firstname } = newState.fields;
-          //validateFirstnameField(email);
+          validateNameField(firstname);
           break;
         case 'lastname':
           const { lastname } = newState.fields;
-          //validateLastnameField(email);
+          validateNameField(lastname);
           break;
         case 'password' || 'confirmation':
           const { password, confirmation } = newState.fields;
-          //validatePasswordField(password, confirmation);
+          validatePasswordField(password, confirmation);
           break;
       }
       this.setState(newState);
