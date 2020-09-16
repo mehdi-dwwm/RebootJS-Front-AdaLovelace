@@ -1,6 +1,8 @@
 import React from 'react';
 import { Switch, Route} from 'react-router-dom';
-import MyContacts from '../users/components/MyContacts';
+import MyProfile from '../profile/MyProfile';
+import ChatUI from '../conversations/component/ChatUI';
+import { HomeScreen } from './HomeScreen';
 import LoginScreen from '../login/LoginScreen';
 
 
@@ -8,8 +10,10 @@ class AppContent extends React.Component {
     render(){
         return (
             <Switch>
+                <Route path="/conversation/:conversationId" component={ChatUI} />
+                <Route path="/profile" component={MyProfile} />
                 <Route path="/login"><LoginScreen /></Route>
-                <Route path="/" component={MyContacts} />
+                <Route path="/" component={HomeScreen} />
             </Switch>
         )
     }

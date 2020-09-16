@@ -1,17 +1,22 @@
 import { Box, createStyles, Drawer, IconButton, Theme, withStyles } from '@material-ui/core';
 import { ArrowBackIos } from '@material-ui/icons';
 import React from 'react';
+import { getUsers } from '../api/methods';
+import { User } from '../users/types';
 import ContactList from '../users/components/MyContacts';
 import { IDrawerContent } from './types';
+import ConversationList from '../conversations/component/ConversationList';
 
 
 interface AppDrawerProps{
     showDrawer: boolean;
     drawerContent?: IDrawerContent;
-    // drawerContent: IDrawerContent;
-    // TODO Recuperer les bonnes infos pour chaque type de contenu;
     hideDrawer: () => void;
     classes: any;
+}
+
+interface AppDrawerState{
+    users: User[];
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -32,9 +37,22 @@ const styles = (theme: Theme) => createStyles({
     },
 })
 
-class AppDrawer extends React.Component<AppDrawerProps>{
+class AppDrawer extends React.Component<AppDrawerProps, AppDrawerState>{
+    constructor(props: AppDrawerProps){
+        super(props);
+        this.state = {
+            users: []
+        }
+    }
+
+    componentDidMount(){
+        getUsers().then(fetchedUsers => { this.setState({users: fetchedUsers})})
+    }
+
+
     render(){
-        const content = this.props.drawerContent === 'contacts' ? <ContactList /> : <h1>A remplir</h1>
+        const { users } = this.state;
+        const content = this.props.drawerContent === 'contacts' ? <ContactList users={users}/> : <ConversationList users={users}/>
         return this.props.showDrawer ?
         <Drawer
         variant="persistent"
