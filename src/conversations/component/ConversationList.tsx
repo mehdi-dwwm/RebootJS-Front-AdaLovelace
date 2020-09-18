@@ -1,5 +1,4 @@
 import React from 'react';
-import { getConversations } from '../../api/methods';
 import { User } from '../../users/types';
 import { IConversation } from '../types';
 import { List } from '@material-ui/core';
@@ -8,31 +7,16 @@ import ConversationListItem from './ConversationListItem';
 
 interface ConversationListProps {
     users: User[];
-}
-
-interface ConversationListState {
     conversations: IConversation[];
 }
 
-class ConversationList extends React.Component<ConversationListProps, ConversationListState>{
-    constructor(props: ConversationListProps){
-        super (props);
-        this.state = {
-            conversations: []
-        }
-    }
 
-    componentDidMount(){
-        getConversations()
-          .then(conversations => this.setState({conversations: conversations}))
-          .catch(error => console.error(error));
-    }
-    
+class ConversationList extends React.Component<ConversationListProps>{
 
     render (){
         return (
             <List>
-                {this.state.conversations.map((conversation, index) => <ConversationListItem users={this.props.users} conversation={conversation} key={index}/>)}
+                {this.props.conversations.map((conversation, index) => <ConversationListItem users={this.props.users} conversation={conversation} key={index}/>)}
             </List>
         )
     }

@@ -5,6 +5,9 @@ import { Alert } from '@material-ui/lab';
 import { login } from '../api/methods';
 import history from '../history';
 import { validateRequiredField } from '../utils/validateRequiredField';
+import { connect } from 'react-redux';
+import { updateConnectedProfile } from '../profile/action/updateConnectedProfile';
+import { IProfile } from '../profile/types';
 
 interface LoginFormState {
     email: IFormField,
@@ -12,8 +15,12 @@ interface LoginFormState {
     status: 'ready' | 'success' | 'error'
 }
 
-class LoginForm extends React.Component<{}, LoginFormState> {
-    constructor(props: {}){
+interface LoginFormProps {
+  updateIdentity: (profile: IProfile) => void;
+}
+
+class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
+    constructor(props: LoginFormProps){
         super(props)
         this.state = {
             email: defaultFormField(),
@@ -25,7 +32,11 @@ class LoginForm extends React.Component<{}, LoginFormState> {
 
     submit(){
         login(this.state.email.value, this.state.password.value)
-          .then((_profile) => history.push('/'))
+          .then((profile) => {
+            this.props.updateIdentity(profile);
+            history.push('/')
+            // this.setState({status: 'success'})
+          })
           .catch(_error => { this.setState({status: 'error'})});
     }
 
@@ -85,4 +96,9 @@ class LoginForm extends React.Component<{}, LoginFormState> {
         )}
 }
 
-export default LoginForm;
+
+const mapDispatchToProps = (dispatch: any) => ({
+  updateIdentity: (profile: IProfile) => dispatch(updateConnectedProfile(profile))
+});
+
+export default connect(undefined, mapDispatchToProps)(LoginForm);

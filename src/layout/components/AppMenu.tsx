@@ -5,7 +5,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import React, { Fragment } from 'react';
 import { ProfileButton } from './ProfileButton';
-import { IDrawerContent } from './types';
+import { IDrawerContent } from '../types';
 import { Contacts, ForumSharp } from '@material-ui/icons';
 import { IconButton } from '@material-ui/core';
 

@@ -1,11 +1,11 @@
 import { User } from "../users/types";
 import axios from 'axios';
 import { IProfile } from "../profile/types";
-import { IConversation } from "../conversations/types";
+import { IConversation, IConversationMessage } from "../conversations/types";
 
 // fetch users via the server
 export function getUsers(): Promise<User[]> {
-  return axios.get(`${process.env.REACT_APP_BACKEND}/profile`)
+  return axios.get(`${process.env.REACT_APP_BACKEND}/profile`, { withCredentials: true })
     .then(resp => {
       return resp.data
     })
@@ -41,69 +41,65 @@ export function getConnectedProfile(): Promise<User> {
     .then((resp) => resp.data);
 }
 
-export function getConversations(): Promise<IConversation[]>{
-  return Promise.resolve([
+export async function getConversations(connectedUser: User): Promise<IConversation[]>{
+  const resp = await axios.get(`${process.env.REACT_APP_BACKEND}/messages`, { withCredentials: true })
+  const messages: IConversationMessage[] = resp.data;
+
+  //Traitement sur les messages : messages => conversations
+  if (messages.length === 0) return []
+
+  const batches = messages.reduce<{ [conversationId: string]: IConversationMessage[] }>(
+    (acc, message) => ({
+      ...acc,
+      [message.conversationId]: [...(acc[message.conversationId] || []), message],
+    }),
+    {},
+  );
+
+  const conversations : IConversation[] = [];
+  for (const conversationId in batches) {
+    const messages = batches[conversationId];
+
+    const attendees = [...new Set(messages.flatMap(({ emitter, targets }) => [emitter, ...targets]))];
+
+    const targets = attendees.filter((id) => id !== connectedUser._id);
+
+    conversations.push({
+      _id: conversationId,
+      targets: targets,
+      messages: messages,
+      updatedAt: getLastMessageDate(messages),
+      unseenMessages: 0
+    })
+  }
+  return conversations;
+}
+
+function getLastMessageDate(messages: IConversationMessage[]) {
+  return messages[messages.length - 1].createdAt;
+}
+
+export async function getConversation(conversationId: string): Promise<IConversation[]>{
+  const resp = await axios.get(`${process.env.REACT_APP_BACKEND}/messages/${conversationId}`, { withCredentials: true })
+  return resp.data;
+}
+
+export async function sendMessage(conversationId: string, targets: string[], content: string){
+  const resp = await axios.post(`${process.env.REACT_APP_BACKEND}/messages`,
     {
-      _id: '1',
-    targets: [
-      '5f521dd7ffda0b1222d8b318',
-      '5f5a35543ec3b9b5160f5f3a'
-    ],
-    updatedAt: new Date(),
-    unseenMessages: 0,
-    messages: [
-      {
-        _id: '1',
-        conversationId: '1',
-        createdAt: new Date(),
-        emitter: '5f521dd7ffda0b1222d8b318',
-        targets: [
-          '5f5a35543ec3b9b5160f5f3a'
-        ],
-        content: 'Bonjour',
-      },
-      {
-        _id: '2',
-        conversationId: '2',
-        createdAt: new Date(),
-        emitter: '5f5a35543ec3b9b5160f5f3a',
-        targets: [
-          '5f521dd7ffda0b1222d8b318'
-        ],
-        content: 'Salut tu vas bien ?',
-      }
-    ]
-  },
-  {
-    _id: '2',
-  targets: [
-    '5f5e8bd6a4ba39010ce08cdd',
-    '5f5e9882a4ba39010ce08cde'
-  ],
-  updatedAt: new Date(),
-  unseenMessages: 0,
-  messages: [
-    {
-      _id: '2',
-      conversationId: '2',
-      createdAt: new Date(),
-      emitter: '5f5e9882a4ba39010ce08cde',
-      targets: [
-        '5f5e8bd6a4ba39010ce08cdd'
-      ],
-      content: 'Hello My Buddy',
+      conversationId, targets, content
     },
     {
-      _id: '2',
-      conversationId: '2',
-      createdAt: new Date(),
-      emitter: '5f5e8bd6a4ba39010ce08cdd',
-      targets: [
-        '5f5e9882a4ba39010ce08cde'
-      ],
-      content: 'Hey my friend !',
-    }
-  ]
+      withCredentials: true
+    });
+  return resp.data;
 }
-])
+
+export async function patchConversationSeen(conversationId: string): Promise<IProfile>{
+  const resp = await axios.patch(
+    `${process.env.REACT_APP_BACKEND}/profile/conversation_seen/${conversationId}`,
+    {},
+    { withCredentials: true }
+  );
+  return resp.data;
 }
