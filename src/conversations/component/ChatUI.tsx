@@ -8,6 +8,7 @@ import ChatInput from './ChatInput';
 import ChatMessages from './ChatMessages';
 import history from '../../history';
 
+
 interface ChatUIState {
   conversation?: IConversation;
 }
@@ -69,7 +70,7 @@ class ChatUI extends React.Component<ChatUIProps, ChatUIState>{
   render(){
     return <Fragment>
       <h1>Chat</h1>
-      { this.state.conversation ? <Fragment>
+        { this.state.conversation ? <Fragment>
           <ChatMessages conversationSeen={this.conversationSeen} messages={this.state.conversation.messages}/>
           <ChatInput doSendMessage={this.doSendMessage} conversationId={this.state.conversation._id}/>
           <AttendeesList attendees={this.props.users.filter(user => this.state.conversation?.targets.includes(user._id))} />

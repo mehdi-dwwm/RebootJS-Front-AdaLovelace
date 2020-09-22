@@ -15,7 +15,7 @@ export default class ChatInput extends React.Component<IChatInputProps, IChatInp
     constructor(props: IChatInputProps){
         super(props);
         this.state = {
-            message: ""
+          message: ""
         }
     }
 

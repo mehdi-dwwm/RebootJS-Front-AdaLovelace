@@ -24,7 +24,7 @@ class LoginScreen extends React.Component<{}, LoginScreenState> {
                     textColor='primary'
                     variant="fullWidth"
                     value={this.state.tab}
-                    onChange={(oldTab, newTab) => {
+                    onChange={(_oldTab, newTab) => {
                         this.setState({tab: newTab})
                     }}>
                     <Tab icon={<Person />} label="login"></Tab>

@@ -8,12 +8,17 @@ import { ProfileButton } from './ProfileButton';
 import { IDrawerContent } from '../types';
 import { Contacts, ForumSharp } from '@material-ui/icons';
 import { IconButton } from '@material-ui/core';
+import { IAppState } from '../../appReducer';
+import { connect } from 'react-redux';
+import { IProfile } from '../../profile/types';
+import { changeDrawerContent } from '../actions/changeDrawerContentAction';
 
 interface AppMenuProps {
   changeDrawerContent: (content: IDrawerContent) => void;
+  profile?: IProfile;
 }
 
-export function AppMenu({ changeDrawerContent } : AppMenuProps){
+export function AppMenu({ changeDrawerContent, profile } : AppMenuProps){
   return (
     <Fragment>
       <AppBar position="static" style={{ height: '10vh' }}>
@@ -24,11 +29,11 @@ export function AppMenu({ changeDrawerContent } : AppMenuProps){
               <Typography variant="h3">flint.</Typography>
             </Toolbar>
           </Grid>
-          <Grid item>
+          { profile ? <Grid item>
             <Toolbar>
-              <h1>Nom de l'utilisateur</h1>
+              <h1>{profile.firstname} {profile.lastname}</h1>
             </Toolbar>
-          </Grid>
+          </Grid> : null }
           <Grid item>
             <Toolbar>
               <IconButton color='default' onClick={() => changeDrawerContent('conversations')}>
@@ -47,4 +52,12 @@ export function AppMenu({ changeDrawerContent } : AppMenuProps){
 }
 
 
-export default AppMenu;
+const mapStateToProps = ({ profile }: IAppState) => ({
+  profile: profile.connectedProfile
+})
+
+const mapDispatchToProps = (dispatch: any) => ({
+  changeDrawerContent: (content: IDrawerContent) => dispatch(changeDrawerContent(content))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(AppMenu);

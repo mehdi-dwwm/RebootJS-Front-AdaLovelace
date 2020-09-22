@@ -6,6 +6,9 @@ import { User } from '../../users/types';
 import ContactList from '../../users/components/MyContacts';
 import { IDrawerContent } from '../types';
 import ConversationList from '../../conversations/component/ConversationList';
+import { connect } from 'react-redux';
+import { IAppState } from '../../appReducer';
+import { changeDrawerContent } from '../actions/changeDrawerContentAction';
 
 
 interface AppDrawerProps{
@@ -57,12 +60,23 @@ class AppDrawer extends React.Component<AppDrawerProps>{
                     <ArrowBackIos />
                 </IconButton>
             </Box>
-            <Box className={this.props.classes.drawerContent}>
+            <Box className={this.props.classes.drawerContent} onClick={this.props.hideDrawer}>
                 {content}
             </Box>
         </Drawer> : null;
     }
 }
 
-export default withStyles(styles)(AppDrawer);
+
 export const drawerWidth = 500;
+
+const mapStateToProps = ({ layout }: IAppState) => ({
+    showDrawer: layout.showDrawer,
+    drawerContent: layout.drawerContent
+  })
+  
+  const mapDispatchToProps = (dispatch: any) => ({
+    hideDrawer: () => dispatch(changeDrawerContent(undefined, false))
+  })
+  
+  export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(AppDrawer));
