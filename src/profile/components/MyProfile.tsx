@@ -5,6 +5,7 @@ import Grid from "@material-ui/core/Grid";
 import { Alert } from "@material-ui/lab";
 import React from "react";
 import { User } from '../../users/types';
+import { IAppState } from '../../appReducer';
 import CredentialsSection from "../../register/components/CredentialsSection";
 import IdentitySection from "../../register/components/IdentitySection";
 import { validateEmailField } from "../../register/utils/validateEmailField";
@@ -15,6 +16,7 @@ import {
   defaultPasswordField,
   IProfileFormFields,
 } from "../../utils/types";
+import { connect } from "react-redux";
 
 
 interface IProfileFormState {
@@ -194,4 +196,7 @@ class MyProfile extends React.Component<IProfileFormProps, IProfileFormState> {
   }
 }
 
-export default MyProfile;
+const mapStateToProps = ({profile}: IAppState) => ({
+  connectedUser: profile.connectedProfile
+})
+export default connect(mapStateToProps)(MyProfile);

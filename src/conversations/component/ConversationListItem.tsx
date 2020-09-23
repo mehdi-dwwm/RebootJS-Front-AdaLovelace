@@ -1,13 +1,15 @@
 import React, { Fragment } from 'react';
 import { IConversation } from '../types';
-import { User } from '../../users/types';
+import { IProfile } from '../../profile/types';
 import { Avatar, Divider, ListItem, ListItemAvatar, ListItemText } from '@material-ui/core';
 import { AvatarGroup } from '@material-ui/lab';
 import history from '../../history';
+import { IAppState } from '../../appReducer';
+import { connect } from 'react-redux';
 
 interface ConversationListItemProps {
     conversation : IConversation;
-    users: User[];
+    users: IProfile[];
 }
 
 class ConversationListItem extends React.Component<ConversationListItemProps>{
@@ -31,4 +33,7 @@ class ConversationListItem extends React.Component<ConversationListItemProps>{
     getUserFormList = (id: string) => this.props.users.find(user => user._id === id)
 }
 
-export default ConversationListItem;
+const mapStateToProps = ({profile}: IAppState) => ({
+    users: profile.list
+})
+export default connect(mapStateToProps)(ConversationListItem);

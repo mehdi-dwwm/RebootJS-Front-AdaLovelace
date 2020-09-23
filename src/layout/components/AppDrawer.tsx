@@ -2,7 +2,6 @@ import { Box, createStyles, Drawer, IconButton, Theme, withStyles } from '@mater
 import { ArrowBackIos } from '@material-ui/icons';
 import React from 'react';
 import { IConversation } from '../../conversations/types';
-import { User } from '../../users/types';
 import ContactList from '../../users/components/MyContacts';
 import { IDrawerContent } from '../types';
 import ConversationList from '../../conversations/component/ConversationList';
@@ -16,8 +15,6 @@ interface AppDrawerProps{
     drawerContent?: IDrawerContent;
     hideDrawer: () => void;
     classes: any;
-    users: User[];
-    connectedUser?: User;
     conversations: IConversation[];
 }
 
@@ -44,9 +41,8 @@ const styles = (theme: Theme) => createStyles({
 class AppDrawer extends React.Component<AppDrawerProps>{
     
     render(){
-        const { users } = this.props;
-        const content = this.props.drawerContent === 'contacts' ? <ContactList connectedUser={this.props.connectedUser} users={users}/> 
-        : <ConversationList conversations={this.props.conversations} users={users}/>
+        const content = this.props.drawerContent === 'contacts' ? <ContactList/> 
+        : <ConversationList conversations={this.props.conversations}/>
         return this.props.showDrawer ?
         <Drawer
         variant="persistent"

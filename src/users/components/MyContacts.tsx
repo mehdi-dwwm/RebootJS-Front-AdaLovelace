@@ -5,10 +5,13 @@ import { User } from '../types';
 import { List, ListItem, Button } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import history from '../../history';
+import { IProfile } from '../../profile/types';
+import { connect } from 'react-redux';
+import { IAppState } from '../../appReducer';
 
 
 interface ContactListProps {
-  users: User[];
+  users: IProfile[];
   connectedUser?: User;
 }
 
@@ -37,4 +40,8 @@ class ContactList extends React.Component<ContactListProps>{
   }
 }
 
-export default ContactList;
+const mapStateToProps = ({profile}: IAppState) => ({
+  users: profile.list,
+  connectedUser: profile.connectedProfile
+})
+export default connect(mapStateToProps)(ContactList);
