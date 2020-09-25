@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { List } from '@material-ui/core';
 import { IConversationMessage } from '../types';
 import ChatMessage from './ChatMessage';
 
@@ -24,7 +25,9 @@ export default class ChatMessages extends React.Component<IChatMessagesProps> {
     }
     render() {
         return (
-            this.props.messages.map((message, index) => <ChatMessage key={index} message={message} />)
+            <List>
+                {this.props.messages.map((message, index) => <ChatMessage key={index} message={message} />)}
+            </List>
         );
     }
 }

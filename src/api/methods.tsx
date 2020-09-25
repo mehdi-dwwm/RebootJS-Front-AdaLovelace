@@ -11,6 +11,17 @@ export function getUsers(): Promise<User[]> {
     })
 }
 
+export function getConnectedProfile(): Promise<User> {
+  return axios
+    .get(
+      `${process.env.REACT_APP_BACKEND}/profile/me`,
+    {
+      withCredentials: true,
+    }
+    )
+    .then(resp => resp.data);
+}
+
 export function login(email: string, password: string): Promise<IProfile>{
   return axios
     .post(
@@ -28,17 +39,6 @@ export function login(email: string, password: string): Promise<IProfile>{
 export function register(email: string, password: string, firstname: string, lastname: string) : Promise<IProfile>{
   return axios.post(`${process.env.REACT_APP_BACKEND}/profile`, { email, password, firstname, lastname })
     .then(resp => resp.data);
-}
-
-export function getConnectedProfile(): Promise<User> {
-  return axios
-    .get(
-      `${process.env.REACT_APP_BACKEND}/profile/me`,
-    {
-      withCredentials: true,
-    }
-    )
-    .then((resp) => resp.data);
 }
 
 export async function getConversations(connectedUser: User): Promise<IConversation[]>{
@@ -84,7 +84,7 @@ export async function getConversation(conversationId: string): Promise<IConversa
   return resp.data;
 }
 
-export async function sendMessage(conversationId: string, targets: string[], content: string){
+export async function sendMessage(conversationId: string, targets: string[], content: string): Promise<IConversationMessage>{
   const resp = await axios.post(`${process.env.REACT_APP_BACKEND}/messages`,
     {
       conversationId, targets, content

@@ -1,81 +1,80 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { match, withRouter } from 'react-router-dom';
 import { patchConversationSeen, sendMessage } from '../../api/methods';
 import AttendeesList from './AttendeesList';
-import { IConversation } from '../types';
+import { IConversation, IConversationMessage } from '../types';
 import ChatInput from './ChatInput';
 import ChatMessages from './ChatMessages';
-import history from '../../history';
+import { connect } from 'react-redux';
+import { IAppState } from '../../appReducer';
+import { UpdateConversationMessage } from '../action/updateConversationMessage';
 
-
-interface ChatUIState {
-  conversation?: IConversation;
-}
 
 interface ChatUIProps {
   match: match< {conversationId: string }>;
   location: any;
   history: any;
-  conversations: IConversation[];
+  conversation?: IConversation;
+  UpdateConversationMessage: (message: IConversationMessage) => void;
 }
 
-class ChatUI extends React.Component<ChatUIProps, ChatUIState>{
-  constructor(props: ChatUIProps){
-    super(props);
-    this.state = {};
-  }
+class ChatUI extends React.Component<ChatUIProps>{
 
   conversationSeen = () => {
-    if(this.state.conversation) {patchConversationSeen(this.state.conversation._id)}
-  }
-
-  // temporaire pour avoir une conversation dans le state
-  // TODO Ne pas faire plusieurs appel. Remonter l'appel dans la hierarchie de composants
-  componentDidMount(){
-    const conversations = this.props.conversations;
-    const conversationId = this.props.match.params.conversationId;
-    let conversation = conversations.find(conv => conv._id === conversationId)
-    if(!conversation) {
-      const target = new URLSearchParams(this.props.location.search).get('target')
-      if(!target) { return history.push('/') }
-      conversation = {
-        _id: conversationId,
-        messages: [],
-        unseenMessages: 0,
-        updatedAt: new Date(),
-        targets: [
-          target
-        ]
-      }
-    }
-    this.setState({conversation: conversation})
+    if(this.props.conversation) { patchConversationSeen(this.props.conversation._id) }
   }
 
   doSendMessage = async (message: string) => {
-    const { conversation } = this.state;
+    const { conversation } = this.props;
     if(conversation) {
       const sentMessage = await sendMessage(conversation._id, conversation.targets, message);
-      this.setState({
-        conversation: {
-          ...conversation,
-          messages: [...conversation.messages, sentMessage]
-        }
-      })
+      this.props.UpdateConversationMessage(sentMessage);
     }
   }
 
 
   render(){
-    return <Fragment>
-      <h1>Chat</h1>
-        { this.state.conversation ? <Fragment>
-          <ChatMessages conversationSeen={this.conversationSeen} messages={this.state.conversation.messages}/>
-          <ChatInput doSendMessage={this.doSendMessage} conversationId={this.state.conversation._id}/>
-          <AttendeesList targets={this.state.conversation?.targets}/>
-        </Fragment> : <h1>Impossible de trouver la conversation</h1> }
-      </Fragment>
-      
+    if(!this.props.conversation){
+      return <h1>Impossible de trouver la conversation</h1>
+    } else {
+      return <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          height: 'calc(100% - 2rem)',
+          padding: '1rem',
+          boxSizing: 'border-box',
+          justifyContent: 'strech',
+        }} >
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              height: '100%',
+              padding: '1rem',
+              boxSizing: 'border-box',
+              flexGrow: 1,
+          }}>
+            <div style={{ flexGrow: 1, overflow: 'auto' }}>
+              <ChatMessages conversationSeen={this.conversationSeen} messages={this.props.conversation.messages}/>
+            </div>
+            <div style={{ flexGrow: 0, height: '60px' }}>
+              <ChatInput doSendMessage={this.doSendMessage} conversationId={this.props.match.params.conversationId}/>
+            </div>
+            <div style={{ height: '100%', flexGrow: 0, width: '15%' }}>
+              <AttendeesList targets={this.props.conversation?.targets} />
+            </div>
+          </div>
+        </div>
+    }
   }
 }
 
-export default withRouter(ChatUI);
+const mapStateToProps = ({ conversation }: IAppState, { match }: ChatUIProps) => ({
+  conversation: conversation.list.find(conversation => conversation._id === match.params.conversationId)
+})
+const mapDispatchToProps = (dispatch : any ) => ({
+  UpdateConversationMessage: (message: IConversationMessage) => dispatch(UpdateConversationMessage(message))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(ChatUI));

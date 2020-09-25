@@ -4,17 +4,12 @@ import MyProfile from '../../profile/components/MyProfile';
 import ChatUI from '../../conversations/component/ChatUI';
 import { HomeScreen } from './HomeScreen';
 import LoginScreen from '../../login/LoginScreen';
-import { IConversation } from '../../conversations/types';
 
-interface AppContentProps {
-    conversations: IConversation[];
-}
-
-class AppContent extends React.Component<AppContentProps> {
+class AppContent extends React.Component {
     render(){
         return (
             <Switch>
-                <Route path='/conversation/:conversationId' component={() => <ChatUI conversations={this.props.conversations}/> } />
+                <Route path='/conversation/:conversationId' component={ ChatUI } />
                 <Route path='/profile' component={MyProfile} />
                 <Route path="/login" component={LoginScreen} />
                 <Route path="/" component={HomeScreen} />
